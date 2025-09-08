@@ -1,14 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 
-type FeaturedMedia = {
-  source_url: string;
-};
+// Types
+type FeaturedMedia = { source_url: string };
+type Embedded = { "wp:featuredmedia"?: FeaturedMedia[] };
 
-type Embedded = {
-  "wp:featuredmedia"?: FeaturedMedia[];
-};
-
-type Post = {
+export type Post = {
   id: number;
   title: { rendered: string };
   excerpt: { rendered: string };
@@ -16,6 +13,7 @@ type Post = {
   featured_image_url?: string;
 };
 
+// Component
 export default function PostCard({ post }: { post: Post }) {
   const title = post.title?.rendered || "Untitled";
   const excerpt = post.excerpt?.rendered?.replace(/(<([^>]+)>)/gi, "") || "";
@@ -27,15 +25,20 @@ export default function PostCard({ post }: { post: Post }) {
   return (
     <article className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 flex flex-col">
       {image && (
-        <img
+        <Image
           src={image}
           alt={title}
-          className="w-full h-48 object-cover rounded mb-4"
+          width={500}
+          height={300}
+          className="rounded mb-4 object-cover"
         />
       )}
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-gray-700 mb-4">{excerpt}</p>
-      <Link href={`/posts/${post.id}`} className="text-green-600 font-medium mt-auto">
+      <Link
+        href={`/posts/${post.id}`}
+        className="text-green-600 font-medium mt-auto"
+      >
         Read more →
       </Link>
     </article>

@@ -2,24 +2,24 @@
 
 import { useState, useEffect } from "react";
 import Layout from "./components/Layout";
-import PostCard from "./components/PostCard";
+import PostCard, { Post } from "./components/PostCard";
 
 const WP_BASE = process.env.NEXT_PUBLIC_WORDPRESS_API_URL as string;
 
 export default function Home() {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
-      const res = await fetch(`${WP_BASE}/articles?per_page=10&page=1&_embed`, {
-        cache: "no-store", 
-      });
-      const data = await res.json();
+      const res = await fetch(
+        `${WP_BASE}/articles?per_page=10&page=1&_embed`,
+        { cache: "no-store" }
+      );
+      const data: Post[] = await res.json();
       const total = Number(res.headers.get("x-wp-totalpages")) || 1;
       setPosts(data);
       setTotalPages(total);
@@ -28,25 +28,24 @@ export default function Home() {
     fetchPosts();
   }, []);
 
-  // pagination
   const loadMore = async () => {
     if (page >= totalPages) return;
     const nextPage = page + 1;
-    const res = await fetch(`${WP_BASE}/articles?per_page=10&page=${nextPage}&_embed`, {
-      cache: "no-store",
-    });
-    const newPosts = await res.json();
+    const res = await fetch(
+      `${WP_BASE}/articles?per_page=10&page=${nextPage}&_embed`,
+      { cache: "no-store" }
+    );
+    const newPosts: Post[] = await res.json();
     setPosts([...posts, ...newPosts]);
     setPage(nextPage);
   };
 
-  // search
   const handleSearch = async (query: string) => {
     if (!query.trim()) return;
     const res = await fetch(`${WP_BASE}/articles?search=${query}&_embed`, {
       cache: "no-store",
     });
-    const results = await res.json();
+    const results: Post[] = await res.json();
     setPosts(results);
     setPage(1);
   };
@@ -71,7 +70,7 @@ export default function Home() {
 
         {/* Posts */}
         <div className="grid md:grid-cols-2 gap-6">
-          {posts.map((post) => (
+          {posts.map((post: Post) => (
             <PostCard key={post.id} post={post} />
           ))}
         </div>
