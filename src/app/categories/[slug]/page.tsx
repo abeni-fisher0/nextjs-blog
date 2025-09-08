@@ -1,8 +1,9 @@
 import Layout from "@/app/components/Layout";
 import PostCard, { Post } from "@/app/components/PostCard";
 
-const WP_BASE = process.env.NEXT_PUBLIC_WORDPRESS_API_URL as string;
+const WP_BASE = process.env.NEXT_PUBLIC_WORDPRESS_API_URL!;
 
+// Data fetching helpers
 async function getCategory(slug: string) {
   const res = await fetch(`${WP_BASE}/categories?slug=${slug}`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch category");
@@ -16,20 +17,31 @@ async function getPostsByCategory(categoryId: number): Promise<Post[]> {
   return res.json();
 }
 
-// Type for page props
-interface CategoryPageProps {
-  params: { slug: string };
-}
-
-export default async function CategoryPage({ params }: CategoryPageProps) {
+// Page component
+export default async function CategoryPage({
+  params,
+}: {
+  params: { slug: string }; // only type params here
+}) {
   const category = await getCategory(params.slug);
-  const posts = category ? await getPostsByCategory(category.id) : [];
+
+  if (!category) {
+    return (
+      <Layout>
+        <div className="max-w-6xl mx-auto py-8">
+          <h1 className="text-3xl font-bold">Category not found</h1>
+        </div>
+      </Layout>
+    );
+  }
+
+  const posts = await getPostsByCategory(category.id);
 
   return (
     <Layout>
       <div className="max-w-6xl mx-auto py-8">
         <h1 className="text-4xl font-bold mb-6">
-          {category ? `Posts in “${category.name}”` : "Category not found"}
+          Posts in “{category.name}”
         </h1>
 
         {posts.length === 0 ? (
