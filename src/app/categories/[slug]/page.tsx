@@ -4,46 +4,33 @@ import PostCard, { Post } from "@/app/components/PostCard";
 const WP_BASE = process.env.NEXT_PUBLIC_WORDPRESS_API_URL as string;
 
 async function getCategory(slug: string) {
-  const res = await fetch(`${WP_BASE}/categories?slug=${slug}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(`${WP_BASE}/categories?slug=${slug}`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch category");
   const data = await res.json();
   return data[0];
 }
 
 async function getPostsByCategory(categoryId: number): Promise<Post[]> {
-  const res = await fetch(
-    `${WP_BASE}/articles?categories=${categoryId}&_embed`,
-    { cache: "no-store" }
-  );
+  const res = await fetch(`${WP_BASE}/articles?categories=${categoryId}&_embed`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch posts");
   return res.json();
 }
 
-export default async function CategoryPage({
-  params,
-}: {
+// Type for page props
+interface CategoryPageProps {
   params: { slug: string };
-}) {
+}
+
+export default async function CategoryPage({ params }: CategoryPageProps) {
   const category = await getCategory(params.slug);
-
-  if (!category) {
-    return (
-      <Layout>
-        <div className="max-w-6xl mx-auto py-8">
-          <h1 className="text-3xl font-bold">Category not found</h1>
-        </div>
-      </Layout>
-    );
-  }
-
-  const posts = await getPostsByCategory(category.id);
+  const posts = category ? await getPostsByCategory(category.id) : [];
 
   return (
     <Layout>
       <div className="max-w-6xl mx-auto py-8">
-        <h1 className="text-4xl font-bold mb-6">Posts in “{category.name}”</h1>
+        <h1 className="text-4xl font-bold mb-6">
+          {category ? `Posts in “${category.name}”` : "Category not found"}
+        </h1>
 
         {posts.length === 0 ? (
           <p>No posts found in this category.</p>
