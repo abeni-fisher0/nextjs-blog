@@ -3,7 +3,7 @@ import PostCard, { Post } from "@/app/components/PostCard";
 
 const WP_BASE = process.env.NEXT_PUBLIC_WORDPRESS_API_URL!;
 
-// Data fetching helpers
+// Fetch helpers
 async function getCategory(slug: string) {
   const res = await fetch(`${WP_BASE}/categories?slug=${slug}`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch category");
@@ -17,12 +17,9 @@ async function getPostsByCategory(categoryId: number): Promise<Post[]> {
   return res.json();
 }
 
-// Page component
-export default async function CategoryPage({
-  params,
-}: {
-  params: { slug: string }; // only type params here
-}) {
+// **Do not type with PageProps or any interface**
+// Just type params inline
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const category = await getCategory(params.slug);
 
   if (!category) {
@@ -40,9 +37,7 @@ export default async function CategoryPage({
   return (
     <Layout>
       <div className="max-w-6xl mx-auto py-8">
-        <h1 className="text-4xl font-bold mb-6">
-          Posts in “{category.name}”
-        </h1>
+        <h1 className="text-4xl font-bold mb-6">Posts in “{category.name}”</h1>
 
         {posts.length === 0 ? (
           <p>No posts found in this category.</p>
