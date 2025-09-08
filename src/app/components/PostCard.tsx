@@ -1,10 +1,18 @@
 import Link from "next/link";
 
+type FeaturedMedia = {
+  source_url: string;
+};
+
+type Embedded = {
+  "wp:featuredmedia"?: FeaturedMedia[];
+};
+
 type Post = {
   id: number;
   title: { rendered: string };
   excerpt: { rendered: string };
-  _embedded?: any;
+  _embedded?: Embedded;
   featured_image_url?: string;
 };
 
