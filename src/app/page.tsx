@@ -12,12 +12,12 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // initial fetch (runs client-side)
+
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       const res = await fetch(`${WP_BASE}/articles?per_page=10&page=1&_embed`, {
-        cache: "no-store", // ensures fresh content
+        cache: "no-store", 
       });
       const data = await res.json();
       const total = Number(res.headers.get("x-wp-totalpages")) || 1;
@@ -28,7 +28,7 @@ export default function Home() {
     fetchPosts();
   }, []);
 
-  // load more pagination
+  // pagination
   const loadMore = async () => {
     if (page >= totalPages) return;
     const nextPage = page + 1;
